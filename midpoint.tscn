@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://7t12kcjbimpu"]
 
 [ext_resource type="Script" path="res://midpoint.gd" id="1_70wol"]
-[ext_resource type="PackedScene" path="res://line_edit.tscn" id="2_qm2fx"]
+[ext_resource type="PackedScene" uid="uid://d8w0qecxnk7h" path="res://line_edit.tscn" id="2_qm2fx"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_dkfb4"]
 

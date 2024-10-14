@@ -5,10 +5,10 @@ var control_points = []
 
 # Возвращает точку на кривой Безье в зависимости от параметра t
 func bezier_point(t: float, index: int) -> Vector2:
-	var p0 = control_points[index * 4]
-	var p1 = control_points[index * 4 + 1]
-	var p2 = control_points[index * 4 + 2]
-	var p3 = control_points[index * 4 + 3]
+	var p0 = control_points[index * 3]
+	var p1 = control_points[index * 3 + 1]
+	var p2 = control_points[index * 3 + 2]
+	var p3 = control_points[index * 3 + 3]
 	# Формула кубического сплайна Безье
 	return (1 - t) * (1 - t) * (1 - t) * p0 + \
 		3 * (1 - t) * (1 - t) * t * p1 + \
@@ -26,9 +26,12 @@ func _draw():
 		old_point = point
 	draw_circle(old_point, 5, Color.GRAY)
 	
-	for i in range(control_points.size() / 4):
+	var sz = (control_points.size() - 4) / 3 + 1
+	if control_points.size() < 4:
+		sz = 0
+	for i in range(sz):
 		var points = 100
-		var old_pos = control_points[i * 4]
+		var old_pos = control_points[i * 3]
 		for j in range(points):
 			var t = j / float(points)  # Нормализованное значение t от 0 до 1
 			var pos = bezier_point(t, i)  # Получаем точку на кривой
@@ -41,3 +44,8 @@ func _on_panel_gui_input(event: InputEvent) -> void:
 			control_points.append(event.global_position)
 			queue_redraw()
 	
+
+
+func _on_clear_pressed() -> void:
+	control_points.clear()
+	queue_redraw()

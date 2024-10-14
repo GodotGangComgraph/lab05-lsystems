@@ -53,4 +53,5 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_i5gf7")
 [node name="Line2D" type="Line2D" parent="."]
 texture_repeat = 2
 
+[connection signal="pressed" from="VBoxContainer/MarginContainer/HBoxContainer/Clear" to="." method="_on_clear_pressed"]
 [connection signal="gui_input" from="VBoxContainer/Panel" to="." method="_on_panel_gui_input"]
