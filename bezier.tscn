@@ -1,6 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://4h5pkwdgi0jk"]
+[gd_scene load_steps=4 format=3 uid="uid://4h5pkwdgi0jk"]
 
 [ext_resource type="Script" path="res://bezier.gd" id="1_7eh5e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8vvx6"]
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_blend = true
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i5gf7"]
 
@@ -45,6 +54,110 @@ layout_mode = 2
 size_flags_horizontal = 0
 text = "CLEAR"
 
+[node name="CheckBox" type="CheckBox" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+button_pressed = true
+text = "SHOW CONTROL POINTS"
+
+[node name="LineWidth" type="HSlider" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_8vvx6")
+min_value = 1.0
+max_value = 20.0
+value = 1.0
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/LineWidth"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = -5.0
+offset_right = 95.0
+offset_bottom = 18.0
+text = "LINE WIDTH"
+
+[node name="Label2" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/LineWidth"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 70.0
+offset_bottom = 53.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ControlLineWidth" type="HSlider" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_8vvx6")
+min_value = 1.0
+max_value = 20.0
+value = 1.0
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/ControlLineWidth"]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 12
+text = "CONTROL WIDTH"
+
+[node name="Label2" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/ControlLineWidth"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 70.0
+offset_bottom = 53.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Radius" type="HSlider" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_8vvx6")
+min_value = 1.0
+max_value = 20.0
+value = 5.0
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/Radius"]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 12
+text = "RADIUS"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/Radius"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 70.0
+offset_bottom = 53.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OutlineSize" type="HSlider" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_8vvx6")
+min_value = 1.0
+max_value = 20.0
+value = 1.0
+
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/OutlineSize"]
+layout_mode = 0
+offset_right = 100.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 12
+text = "OUTLINE RADIUS"
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer/OutlineSize"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = 70.0
+offset_bottom = 53.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Panel" type="Panel" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -54,4 +167,9 @@ theme_override_styles/panel = SubResource("StyleBoxEmpty_i5gf7")
 texture_repeat = 2
 
 [connection signal="pressed" from="VBoxContainer/MarginContainer/HBoxContainer/Clear" to="." method="_on_clear_pressed"]
+[connection signal="toggled" from="VBoxContainer/MarginContainer/HBoxContainer/CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/LineWidth" to="." method="_on_h_slider_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/ControlLineWidth" to="." method="_on_control_line_width_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/Radius" to="." method="_on_radius_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/OutlineSize" to="." method="_on_outline_size_value_changed"]
 [connection signal="gui_input" from="VBoxContainer/Panel" to="." method="_on_panel_gui_input"]
