@@ -3,6 +3,23 @@ extends Control
 @onready var line_container = $LineContainer
 var lines = []
 
+var iterations = 12
+var initial_width = 15
+var length_reduction = 0.9
+var width_reduction = 0.7
+var rule = RandomTree.new()
+var start_color = Color.SADDLE_BROWN
+var end_color = Color.LAWN_GREEN
+
+var lines_per_frame = 10
+
+@onready var end_color_picker: ColorPickerButton = $VBoxContainer/MarginContainer/HBoxContainer/EndColor
+@onready var start_color_picker: ColorPickerButton = $VBoxContainer/MarginContainer/HBoxContainer/StartColor
+@onready var initial_width_slider: HSlider = $VBoxContainer/MarginContainer/HBoxContainer/InitialWidth
+@onready var length_reduction_slider: HSlider = $VBoxContainer/MarginContainer/HBoxContainer/LengthReduction
+@onready var width_reduction_slider: HSlider = $VBoxContainer/MarginContainer/HBoxContainer/WidthReduction
+@onready var iterations_slider: HSlider = $VBoxContainer/MarginContainer/HBoxContainer/Iterations
+
 func _ready():
 	#var file = FileAccess.open("user://rules.txt", FileAccess.READ)
 	#var content = file.get_as_text()
@@ -12,13 +29,13 @@ func _ready():
 	#lines = generate(9, 1, 1, 3.0, Color.RED, Color.DARK_BLUE, SierpinskiTriangle.new())
 	#lines = generate(8, 1, 0.99, 10.0, Color(0.2, 0.7, 1.0), Color(0.2, 0.7, 1.0), FractalPlant.new())
 	#lines = generate(6, 1, 1, 5, Color(0.5, 1, 1, 1.0), Color(0.5, 1, 1, 1.0), CochCurve.new())
-	lines = generate(12, 0.9, 0.7, 15.0, Color.SADDLE_BROWN, Color.LAWN_GREEN, RandomTree.new())
+	lines = generate()
 
 
 func _process(delta):
 	if lines.is_empty():
 		return
-	var lines_per_frame = 10
+	
 	for index in lines_per_frame:
 		var line: Line2D = lines.pop_front()
 		line_container.add_child(line)
@@ -27,12 +44,16 @@ func _process(delta):
 			break
 
 
-func generate(iterations, length_reduction, width_reduction, initial_width, start_color, end_color, rule):
+func generate():
 	var length = -1
 	var arrangement = rule.axiom
 	var width = initial_width
 	var color = start_color
 	var color_add = (end_color-start_color)/iterations
+	
+	var uses_store = false
+	
+	var new_lines = []
 	
 	for i in iterations:
 		var new_arrangement = ""
@@ -55,7 +76,7 @@ func generate(iterations, length_reduction, width_reduction, initial_width, star
 				line.add_point(to)
 				line.begin_cap_mode = Line2D.LINE_CAP_ROUND
 				line.end_cap_mode = Line2D.LINE_CAP_ROUND
-				lines.push_back(line)
+				new_lines.push_back(line)
 				from = to
 				width = max(1, width * width_reduction)
 				color = color + color_add
@@ -69,6 +90,7 @@ func generate(iterations, length_reduction, width_reduction, initial_width, star
 			"rotate_left_random":
 				rot -= randi_range(1, rule.angle)
 			"store":
+				uses_store = true
 				cache_queue.push_back([from, rot, width, color, length])
 			"load":
 				var cached_data = cache_queue.pop_back()
@@ -78,12 +100,20 @@ func generate(iterations, length_reduction, width_reduction, initial_width, star
 				color = cached_data[3]
 				length = cached_data[4]
 	
-	var scale_and_offset = calculate_scale_factor()
-	scale_lines(scale_and_offset)
-	return lines
+	if not uses_store:
+		color_add = (end_color-start_color)/new_lines.size()
+		print(color_add)
+		for index in new_lines.size():
+			#print(1, new_lines[index].default_color)
+			new_lines[index].default_color = start_color + color_add*index
+			#print(2, new_lines[index].default_color)
+	
+	var scale_and_offset = calculate_scale_factor(new_lines)
+	scale_lines(scale_and_offset, new_lines)
+	return new_lines
 
 
-func calculate_scale_factor():
+func calculate_scale_factor(lines):
 	var min_point = Vector2.INF
 	var max_point = -Vector2.INF
 	
@@ -93,7 +123,7 @@ func calculate_scale_factor():
 	
 	var content_size = max_point - min_point
 	
-	var window_size = get_viewport_rect().size
+	var window_size = get_viewport_rect().size - Vector2(0, $VBoxContainer/MarginContainer.size.y)
 	
 	var scale_x = window_size.x / content_size.x
 	var scale_y = window_size.y / content_size.y
@@ -102,14 +132,14 @@ func calculate_scale_factor():
 	
 	var offset
 	if scale_factor == scale_x:
-		offset = -min_point*scale_factor + Vector2(0, window_size.y/2 - (max_point.y-min_point.y)/2 * scale_factor)
+		offset = -min_point*scale_factor + Vector2(0, window_size.y/2 - (max_point.y-min_point.y)/2 * scale_factor + $VBoxContainer/MarginContainer.size.y)
 	else:
-		offset = -min_point*scale_factor + Vector2(window_size.x/2 - (max_point.x-min_point.x)/2 * scale_factor, 0)
+		offset = -min_point*scale_factor + Vector2(window_size.x/2 - (max_point.x-min_point.x)/2 * scale_factor, $VBoxContainer/MarginContainer.size.y)
 	
 	return [scale_factor, offset]
 
 
-func scale_lines(scale_and_offset):
+func scale_lines(scale_and_offset, lines):
 	for i in range(lines.size()):
 		lines[i].points[0] = lines[i].points[0] * scale_and_offset[0] + scale_and_offset[1]
 		lines[i].points[1] = lines[i].points[1] * scale_and_offset[0] + scale_and_offset[1]
@@ -227,3 +257,156 @@ class RandomTree extends Rule:
 			"[" : "store",
 			"]" : "load"
 		}
+
+
+func _on_menu_pressed() -> void:
+	get_tree().change_scene_to_file("res://menu.tscn")
+
+
+func _on_generate_pressed() -> void:
+	_on_clear_pressed()
+	lines = generate()
+
+
+func _on_clear_pressed() -> void:
+	lines.clear()
+	
+	var children = line_container.get_children()
+	for child in children:
+		child.free()
+
+
+func _on_option_button_item_selected(index: int) -> void:
+	match index:
+		0:
+			rule = RandomTree.new()
+			
+			iterations = 12
+			initial_width = 15
+			length_reduction = 0.9
+			width_reduction = 0.7
+			rule = RandomTree.new()
+			start_color = Color.SADDLE_BROWN
+			end_color = Color.LAWN_GREEN
+			
+			iterations_slider.value = 12
+			initial_width_slider.value = 15
+			length_reduction_slider.value = 0.9
+			width_reduction_slider.value = 0.7
+			start_color_picker.color = Color.SADDLE_BROWN
+			end_color_picker.color = Color.LAWN_GREEN
+		1:
+			rule = FractalPlant.new()
+			
+			iterations = 6
+			initial_width = 2
+			length_reduction = 0.99
+			width_reduction = 1
+			start_color = Color(0.2, 0.7, 1.0)
+			end_color = Color(0.2, 0.7, 1.0)
+			
+			iterations_slider.value = 6
+			initial_width_slider.value = 2
+			length_reduction_slider.value = 0.99
+			width_reduction_slider.value = 1
+			start_color_picker.color = Color(0.2, 0.7, 1.0)
+			end_color_picker.color = Color(0.2, 0.7, 1.0)
+		2:
+			rule = GosperCurve.new()
+			
+			iterations = 4
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			start_color = Color.GREEN
+			end_color = Color.GREEN
+			
+			iterations_slider.value = 4
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+			start_color_picker.color = Color.GREEN
+			end_color_picker.color = Color.GREEN
+		3:
+			rule = DragonCurve.new()
+			
+			iterations = 13
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			start_color = Color(0.5, 1, 1, 1.0)
+			end_color = Color(0.5, 1, 1, 1.0)
+			
+			iterations_slider.value = 13
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+			start_color_picker.color = Color(0.5, 1, 1, 1.0)
+			end_color_picker.color = Color(0.5, 1, 1, 1.0)
+		4:
+			rule = CochCurve.new()
+			
+			iterations = 6
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			start_color = Color(0.5, 1, 1, 1.0)
+			end_color = Color(0.5, 1, 1, 1.0)
+			
+			iterations_slider.value = 6
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+			start_color_picker.color = Color(0.5, 1, 1, 1.0)
+			end_color_picker.color = Color(0.5, 1, 1, 1.0)
+		5:
+			rule = SierpinskiTriangle.new()
+
+			iterations = 9
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			start_color = Color.RED
+			end_color = Color.DARK_BLUE
+			
+			iterations_slider.value = 9
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+			start_color_picker.color = Color.RED
+			end_color_picker.color = Color.DARK_BLUE
+
+
+@onready var label_2_1: Label = $VBoxContainer/MarginContainer/HBoxContainer/InitialWidth/Label2
+func _on_initial_width_value_changed(value: float) -> void:
+	label_2_1.text = str(value)
+	initial_width = value
+
+@onready var label_2_2: Label = $VBoxContainer/MarginContainer/HBoxContainer/LengthReduction/Label2
+func _on_length_reduction_value_changed(value: float) -> void:
+	label_2_2.text = str(value)
+	length_reduction = value
+
+@onready var label_2_3: Label = $VBoxContainer/MarginContainer/HBoxContainer/WidthReduction/Label2
+func _on_width_reduction_value_changed(value: float) -> void:
+	label_2_3.text = str(value)
+	width_reduction = value
+
+@onready var label_2_4: Label = $VBoxContainer/MarginContainer/HBoxContainer/Iterations/Label2
+func _on_iterations_value_changed(value: float) -> void:
+	label_2_4.text = str(value)
+	iterations = int(value)
+
+
+func _on_end_color_popup_closed() -> void:
+	end_color = end_color_picker.color
+
+
+func _on_start_color_popup_closed() -> void:
+	start_color = start_color_picker.color
+
+@onready var label_2_5: Label = $VBoxContainer/MarginContainer/HBoxContainer/LinesPerFrame/Label2
+
+func _on_lines_per_frame_value_changed(value: float) -> void:
+	label_2_5.text = str(value)
+	lines_per_frame = int(value)
