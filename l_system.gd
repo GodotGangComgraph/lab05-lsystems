@@ -4,26 +4,21 @@ extends Control
 var lines = []
 
 func _ready():
-	await get_tree().process_frame
-	var center = Vector2(get_viewport_rect().end.x / 2, get_viewport_rect().end.y / 2)
-	var bottom_center = Vector2(get_viewport_rect().end.x / 2, get_viewport_rect().end.y)
-	var bottom_right = Vector2(get_viewport_rect().end.x / 3 * 2, get_viewport_rect().end.y)
-	
 	#var file = FileAccess.open("user://rules.txt", FileAccess.READ)
 	#var content = file.get_as_text()
-	#lines = generate(bottom_center, 5, 0.6, Color(0.9, 0.6, 1.0, 0.7), 2.0, FractalTree.new())
-	#lines = generate(center, 15, 0.8, 1, Color(0.5, 1, 1, 1.0), 1, DragonCurve.new())
-	#lines = generate(center, 2, 0.3, 1, Color.GREEN, 1, GosperCurve.new())
-	#lines = generate(bottom_right, 6, 0.7, Color.RED, 2.0, SierpinskiTriangle.new())
-	#lines = generate(bottom_center, 5, 0.57, 0.98, Color(0.2, 0.7, 1.0), 10.0, FractalPlant.new())
-	#lines = generate(bottom_center, 5, 0.5, Color(0.5, 1, 1, 1.0), 5, CochCurve.new())
-	lines = generate(bottom_center, 14, 1, 0.8, Color.SADDLE_BROWN, Color.GREEN, 15.0, RandomTree.new())
+	
+	#lines = generate(14, 1, 1, 1, Color(0.5, 1, 1, 1.0), Color(0.5, 1, 1, 1.0), DragonCurve.new())
+	#lines = generate(6, 1, 1, 1, Color.GREEN, Color.GREEN, GosperCurve.new())
+	#lines = generate(9, 1, 1, 3.0, Color.RED, Color.DARK_BLUE, SierpinskiTriangle.new())
+	#lines = generate(8, 1, 0.99, 10.0, Color(0.2, 0.7, 1.0), Color(0.2, 0.7, 1.0), FractalPlant.new())
+	#lines = generate(6, 1, 1, 5, Color(0.5, 1, 1, 1.0), Color(0.5, 1, 1, 1.0), CochCurve.new())
+	lines = generate(12, 0.9, 0.7, 15.0, Color.SADDLE_BROWN, Color.LAWN_GREEN, RandomTree.new())
 
 
 func _process(delta):
 	if lines.is_empty():
 		return
-	var lines_per_frame = 100
+	var lines_per_frame = 10
 	for index in lines_per_frame:
 		var line: Line2D = lines.pop_front()
 		line_container.add_child(line)
@@ -32,22 +27,20 @@ func _process(delta):
 			break
 
 
-func generate(start_position, iterations, length_reduction, width_reduction, start_color, end_color, initial_width, rule):
-	var length = -200
+func generate(iterations, length_reduction, width_reduction, initial_width, start_color, end_color, rule):
+	var length = -1
 	var arrangement = rule.axiom
 	var width = initial_width
 	var color = start_color
-	var color_add = (end_color-start_color)/iterations/3
+	var color_add = (end_color-start_color)/iterations
 	
 	for i in iterations:
-		length *= length_reduction
 		var new_arrangement = ""
 		for character in arrangement:
 			new_arrangement += rule.get_character(character)
 		arrangement = new_arrangement
 	
-	var lines = []
-	var from = start_position
+	var from = Vector2.ZERO
 	var rot = rule.start_angle
 	var cache_queue = []
 	for index in arrangement:
@@ -60,13 +53,13 @@ func generate(start_position, iterations, length_reduction, width_reduction, sta
 				line.width = width
 				line.add_point(from)
 				line.add_point(to)
-				lines.push_back(line)
 				line.begin_cap_mode = Line2D.LINE_CAP_ROUND
 				line.end_cap_mode = Line2D.LINE_CAP_ROUND
+				lines.push_back(line)
 				from = to
-				width = width * width_reduction
+				width = max(1, width * width_reduction)
 				color = color + color_add
-				length = length / 1.2
+				length = length * length_reduction
 			"rotate_right":
 				rot += rule.angle
 			"rotate_left":
@@ -85,7 +78,41 @@ func generate(start_position, iterations, length_reduction, width_reduction, sta
 				color = cached_data[3]
 				length = cached_data[4]
 	
+	var scale_and_offset = calculate_scale_factor()
+	scale_lines(scale_and_offset)
 	return lines
+
+
+func calculate_scale_factor():
+	var min_point = Vector2.INF
+	var max_point = -Vector2.INF
+	
+	for line in lines:
+		min_point = min_point.min(line.points[0]).min(line.points[1])
+		max_point = max_point.max(line.points[0]).max(line.points[1])
+	
+	var content_size = max_point - min_point
+	
+	var window_size = get_viewport_rect().size
+	
+	var scale_x = window_size.x / content_size.x
+	var scale_y = window_size.y / content_size.y
+	
+	var scale_factor = min(scale_x, scale_y)
+	
+	var offset
+	if scale_factor == scale_x:
+		offset = -min_point*scale_factor + Vector2(0, window_size.y/2 - (max_point.y-min_point.y)/2 * scale_factor)
+	else:
+		offset = -min_point*scale_factor + Vector2(window_size.x/2 - (max_point.x-min_point.x)/2 * scale_factor, 0)
+	
+	return [scale_factor, offset]
+
+
+func scale_lines(scale_and_offset):
+	for i in range(lines.size()):
+		lines[i].points[0] = lines[i].points[0] * scale_and_offset[0] + scale_and_offset[1]
+		lines[i].points[1] = lines[i].points[1] * scale_and_offset[0] + scale_and_offset[1]
 
 
 class Rule:
@@ -169,15 +196,16 @@ class FractalPlant extends Rule:
 
 class GosperCurve extends Rule:
 	func _init():
-		self.axiom = "XF"
+		self.axiom = "A"
 		self.angle = 60
 		self.start_angle = 0
 		self.rules = {
-			"X" : "X+YF++YF−FX−−FXFX−YF+",
-			"Y" : "−FX+YFYF++YF+FX−−FX−Y",
+			"A" : "A-B--B+A++AA+B-",
+			"B" : "+A-BB--B-A++A+B",
 		}
 		self.actions = {
-			"F" : "draw_forward",
+			"A" : "draw_forward",
+			"B" : "draw_forward",
 			"+" : "rotate_right",
 			"-" : "rotate_left",
 		}
