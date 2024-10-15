@@ -57,3 +57,7 @@ func _on_check_box_toggled(toggled_on: bool) -> void:
 	draw_circles = toggled_on
 	queue_redraw()
 	
+
+
+func _on_menu_pressed() -> void:
+	get_tree().change_scene_to_file("res://menu.tscn")

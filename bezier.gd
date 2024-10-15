@@ -110,3 +110,7 @@ func _on_radius_value_changed(value: float) -> void:
 func _on_outline_size_value_changed(value: float) -> void:
 	label_2_4.text = str(value)
 	outline_radius = value + point_radius
+
+
+func _on_menu_pressed() -> void:
+	get_tree().change_scene_to_file("res://menu.tscn")

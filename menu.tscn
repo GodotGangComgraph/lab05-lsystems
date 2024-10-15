@@ -1,4 +1,7 @@
-[gd_scene format=3 uid="uid://crjw3oeh5kveo"]
+[gd_scene load_steps=3 format=3 uid="uid://crjw3oeh5kveo"]
+
+[ext_resource type="Script" path="res://menu.gd" id="1_j5ro4"]
+[ext_resource type="Texture2D" uid="uid://bm0e0f7jcg8i8" path="res://assets/cool.gif" id="1_y8o4i"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -7,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_j5ro4")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -30,7 +34,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 40
-text = "FRACTAL CORNER"
+text = "FRACTALS"
 
 [node name="Midpoint" type="Button" parent="MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(500, 100)
@@ -38,7 +42,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 40
-disabled = true
 text = "MIDPOINT DISPLACEMENT"
 
 [node name="Bezier" type="Button" parent="MarginContainer/VBoxContainer"]
@@ -47,9 +50,14 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 40
-disabled = true
 text = "BEZIER CURVES"
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Fractals" to="." method="_on_load_image_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Midpoint" to="." method="_on_open_grayscale_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Bezier" to="." method="_on_open_rgb_pressed"]
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("1_y8o4i")
+stretch_mode = 3
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Fractals" to="." method="_on_fractals_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Midpoint" to="." method="_on_midpoint_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Bezier" to="." method="_on_bezier_pressed"]

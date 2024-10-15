@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://4h5pkwdgi0jk"]
+[gd_scene load_steps=5 format=3 uid="uid://4h5pkwdgi0jk"]
 
 [ext_resource type="Script" path="res://bezier.gd" id="1_7eh5e"]
 
@@ -12,6 +12,16 @@ expand_margin_top = 2.0
 expand_margin_bottom = 2.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i5gf7"]
+
+[sub_resource type="Environment" id="Environment_ubc30"]
+background_mode = 3
+glow_enabled = true
+glow_normalized = true
+glow_intensity = 2.08
+glow_strength = 1.32
+glow_bloom = 0.17
+glow_blend_mode = 1
+glow_hdr_threshold = 0.79
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -163,9 +173,10 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxEmpty_i5gf7")
 
-[node name="Line2D" type="Line2D" parent="."]
-texture_repeat = 2
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ubc30")
 
+[connection signal="pressed" from="VBoxContainer/MarginContainer/HBoxContainer/Menu" to="." method="_on_menu_pressed"]
 [connection signal="pressed" from="VBoxContainer/MarginContainer/HBoxContainer/Clear" to="." method="_on_clear_pressed"]
 [connection signal="toggled" from="VBoxContainer/MarginContainer/HBoxContainer/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/LineWidth" to="." method="_on_h_slider_value_changed"]
