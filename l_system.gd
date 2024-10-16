@@ -102,7 +102,6 @@ func generate():
 	
 	if not uses_store:
 		color_add = (end_color-start_color)/new_lines.size()
-		print(color_add)
 		for index in new_lines.size():
 			#print(1, new_lines[index].default_color)
 			new_lines[index].default_color = start_color + color_add*index

@@ -1,6 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://crjw3oeh5kveo"]
+[gd_scene load_steps=4 format=3 uid="uid://crjw3oeh5kveo"]
 
 [ext_resource type="Script" path="res://menu.gd" id="1_j5ro4"]
+[ext_resource type="VideoStream" path="res://assets/cool.ogv" id="2_w51ik"]
+
+[sub_resource type="Environment" id="Environment_aecvh"]
+background_mode = 3
+glow_enabled = true
+glow_normalized = true
+glow_intensity = 2.7
+glow_strength = 1.14
+glow_bloom = 0.15
+glow_blend_mode = 1
+glow_hdr_threshold = 0.79
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -50,6 +61,17 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 40
 text = "BEZIER CURVES"
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+stream = ExtResource("2_w51ik")
+autoplay = true
+loop = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_aecvh")
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Fractals" to="." method="_on_fractals_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Midpoint" to="." method="_on_midpoint_pressed"]
