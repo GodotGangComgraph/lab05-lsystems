@@ -257,6 +257,100 @@ class RandomTree extends Rule:
 			"]" : "load"
 		}
 
+class CochIsland extends Rule:
+	func _init():
+		self.axiom = "F+F+F+F"
+		self.angle = 90
+		self.start_angle = 0
+		self.rules = {
+			"F" : "F+F−F−FF+F+F−F",
+		}
+		self.actions = {
+			"F" : "draw_forward",
+			"+" : "rotate_right",
+			"-" : "rotate_left",
+		}
+
+class HilbertCurve extends Rule:
+	func _init():
+		self.axiom = "A"
+		self.angle = 90
+		self.start_angle = 0
+		self.rules = {
+			"A" : "-BF+AFA+FB-",
+			"B" : "+AF-BFB-FA+"
+		}
+		self.actions = {
+			"F" : "draw_forward",
+			"+" : "rotate_right",
+			"-" : "rotate_left",
+		}
+
+
+class Kust1 extends Rule:
+	func _init():
+		self.axiom = "F"
+		self.angle = 22
+		self.start_angle = 0
+		self.rules = {
+			"F" : "FF−[−F+F+F]+[+F−F−F]",
+		}
+		self.actions = {
+			"F" : "draw_forward",
+			"+" : "rotate_right",
+			"-" : "rotate_left",
+			"[" : "store",
+			"]" : "load"
+		}
+
+class SomePlant1 extends Rule:
+	func _init():
+		self.axiom = "F"
+		self.angle = 35
+		self.start_angle = 0
+		self.rules = {
+			"F" : "F[+FF][-FF]F[-F][+F]F",
+		}
+		self.actions = {
+			"F" : "draw_forward",
+			"+" : "rotate_right",
+			"-" : "rotate_left",
+			"[" : "store",
+			"]" : "load"
+		}
+
+
+class HexaMosaic extends Rule:
+	func _init():
+		self.axiom = "X"
+		self.angle = 60
+		self.start_angle = 0
+		self.rules = {
+			"X" : "[−F+F[Y]+F][+F−F[X]−F]",
+			"Y" : "[−F+F[Y]+F][+F−F−F]"
+		}
+		self.actions = {
+			"F" : "draw_forward",
+			"+" : "rotate_right",
+			"-" : "rotate_left",
+			"[" : "store",
+			"]" : "load"
+		}
+
+class Crystal extends Rule:
+	func _init():
+		self.axiom = "F+F+F+F"
+		self.angle = 90
+		self.start_angle = 0
+		self.rules = {
+			"F" : "FF+F++F+F",
+		}
+		self.actions = {
+			"F" : "draw_forward",
+			"+" : "rotate_right",
+			"-" : "rotate_left",
+		}
+
 
 func _on_menu_pressed() -> void:
 	get_tree().change_scene_to_file("res://menu.tscn")
@@ -374,6 +468,72 @@ func _on_option_button_item_selected(index: int) -> void:
 			width_reduction_slider.value = 1
 			start_color_picker.color = Color.RED
 			end_color_picker.color = Color.DARK_BLUE
+		6:
+			rule = CochIsland.new()
+			iterations = 4
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			
+			iterations_slider.value = 4
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+		7:
+			rule = Kust1.new()
+			iterations = 5
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			
+			iterations_slider.value = 5
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+		8: 
+			rule = HexaMosaic.new()
+			iterations = 5
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			
+			iterations_slider.value = 5
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+		9:
+			rule = HilbertCurve.new()
+			iterations = 5
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			
+			iterations_slider.value = 5
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+		10:
+			rule = SomePlant1.new()
+			iterations = 5
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			
+			iterations_slider.value = 5
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
+		11:
+			rule = Crystal.new()
+			iterations = 5
+			initial_width = 1
+			length_reduction = 1
+			width_reduction = 1
+			
+			iterations_slider.value = 5
+			initial_width_slider.value = 1
+			length_reduction_slider.value = 1
+			width_reduction_slider.value = 1
 
 
 @onready var label_2_1: Label = $VBoxContainer/MarginContainer/HBoxContainer/InitialWidth/Label2
