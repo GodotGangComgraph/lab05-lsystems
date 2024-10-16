@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://4h5pkwdgi0jk"]
+[gd_scene load_steps=6 format=3 uid="uid://4h5pkwdgi0jk"]
 
 [ext_resource type="Script" path="res://bezier.gd" id="1_7eh5e"]
 
@@ -10,6 +10,12 @@ border_width_bottom = 1
 border_blend = true
 expand_margin_top = 2.0
 expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_om88r"]
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i5gf7"]
 
@@ -168,6 +174,12 @@ offset_bottom = 53.0
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ColorPickerButton" type="ColorPickerButton" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_om88r")
+color = Color(1, 0, 0, 1)
+
 [node name="Panel" type="Panel" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -183,4 +195,5 @@ environment = SubResource("Environment_ubc30")
 [connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/ControlLineWidth" to="." method="_on_control_line_width_value_changed"]
 [connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/Radius" to="." method="_on_radius_value_changed"]
 [connection signal="value_changed" from="VBoxContainer/MarginContainer/HBoxContainer/OutlineSize" to="." method="_on_outline_size_value_changed"]
+[connection signal="color_changed" from="VBoxContainer/MarginContainer/HBoxContainer/ColorPickerButton" to="." method="_on_color_picker_button_color_changed"]
 [connection signal="gui_input" from="VBoxContainer/Panel" to="." method="_on_panel_gui_input"]

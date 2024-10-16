@@ -11,7 +11,7 @@ var control_line_width = 1
 var draw_control_points: bool = true
 @onready var label_2: Label = $VBoxContainer/MarginContainer/HBoxContainer/LineWidth/Label2
 @onready var label_2_2: Label = $VBoxContainer/MarginContainer/HBoxContainer/ControlLineWidth/Label2
-
+@onready var color_picker_button: ColorPickerButton = $VBoxContainer/MarginContainer/HBoxContainer/ColorPickerButton
 
 func bezier_point(t: float, index: int) -> Vector2:
 	var p0 = control_points[index * 3 + 1]
@@ -55,7 +55,7 @@ func _draw():
 		for j in range(points):
 			var t = j / float(points)  # Нормализованное значение t от 0 до 1
 			var pos = bezier_point(t, i)
-			draw_line(old_pos, pos, Color.RED, line_width)
+			draw_line(old_pos, pos, color_picker_button.color, line_width)
 			old_pos = pos
 			
 func _on_panel_gui_input(event: InputEvent) -> void:
@@ -148,3 +148,7 @@ func _on_outline_size_value_changed(value: float) -> void:
 
 func _on_menu_pressed() -> void:
 	get_tree().change_scene_to_file("res://menu.tscn")
+
+
+func _on_color_picker_button_color_changed(color: Color) -> void:
+	queue_redraw()
