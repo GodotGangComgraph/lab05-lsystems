@@ -60,7 +60,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 40
-text = "BEZIER CURVES"
+text = "BÉZIER CURVES"
 
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
